@@ -44,7 +44,7 @@ class Guess:
 
     @word.setter
     def word(self, word: Word):
-        assert True
+        assert type(word) == Word, "Word is not of type word"
 
         self._word = word
 
@@ -58,7 +58,7 @@ class Guess:
 
     @clues.setter
     def clues(self, clues: Clue):
-        assert True
+        assert type(clues) == Clue, "Clues is not of type clue"
 
         self._clues = clues
 
@@ -77,7 +77,7 @@ def check_letter(letter: str, index: int, word: Word) -> Clue:
     Given a letter and an index, computes the colour of the blue based on the word
     """
 
-    assert True
+    assert (index < WORD_LENGTH), "Index must be within bounds" 
 
     if word[index: index + 1] == letter:
         return Clue.GREEN
@@ -93,7 +93,7 @@ def check_guess(word: Word, guess: Word) -> List[Clue]:
     Given the answer and a guess
     compute the list of clues correspsonding to each letter
     """
-    assert True
+    assert len(guess) == WORD_LENGTH, "Your guess must be 5 characters"
     clues = []
     for index in range(6):
         clues.append(check_letter(guess[index: index + 1], index, word))
@@ -116,7 +116,7 @@ class Game:
         """
         Make a guess at the wordle
         """
-        assert True
+        assert word == WORD_LENGTH, "Guess must be 5 letters"
 
         word = word.upper()
         guess = Guess(word, check_guess(self.answer, word))
