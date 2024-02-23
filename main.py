@@ -123,8 +123,8 @@ class Game:
         self.guesses.append(guess)
 
         won = True
-        for answers in guess.clues:
-            if answers == Clue.YELLOW or answers == Clue.GREY:
+        for results in guess.clues:
+            if results == Clue.YELLOW or results == Clue.GREY:
                 won = False
         
         if won == True:
@@ -132,8 +132,6 @@ class Game:
         
         if len(self.guesses) == 6:
             self.gstate = Gamestate.LOST
-        
-
 
 
     def print_state(self):
