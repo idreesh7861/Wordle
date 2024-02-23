@@ -44,7 +44,7 @@ class Guess:
 
     @word.setter
     def word(self, word: Word):
-        assert type(word) == Word, "Word is not of type word"
+        assert type(word) == Word, "Word must be of type word"
 
         self._word = word
 
@@ -58,7 +58,7 @@ class Guess:
 
     @clues.setter
     def clues(self, clues: Clue):
-        assert type(clues) == Clue, "Clues is not of type clue"
+        assert type(clues) == list
 
         self._clues = clues
 
@@ -74,10 +74,13 @@ class Guess:
 
 def check_letter(letter: str, index: int, word: Word) -> Clue:
     """
-    Given a letter and an index, computes the colour of the blue based on the word
+    Given a letter and an index, computes the colour of the clue based on the word
     """
-
-    assert (index < WORD_LENGTH), "Index must be within bounds" 
+    
+    assert type(index) == int, "Index must be of type int"
+    assert type(letter) == str, "Letter must be of type string"
+    assert type(word) == Word, "Word must be of type word"
+    assert index <= WORD_LENGTH, "Index must be within bounds"
 
     if word[index: index + 1] == letter:
         return Clue.GREEN
@@ -93,9 +96,11 @@ def check_guess(word: Word, guess: Word) -> List[Clue]:
     Given the answer and a guess
     compute the list of clues correspsonding to each letter
     """
+    assert type(word) == Word and type(guess) == Word, "Guess and word must be of type Word"
     assert len(guess) == WORD_LENGTH, "Your guess must be 5 characters"
+
     clues = []
-    for index in range(6):
+    for index in range(5):
         clues.append(check_letter(guess[index: index + 1], index, word))
 
     return clues
@@ -116,7 +121,9 @@ class Game:
         """
         Make a guess at the wordle
         """
-        assert word == WORD_LENGTH, "Guess must be 5 letters"
+
+        assert type(word) == Word, "word must be of type Word"
+        assert len(word) == WORD_LENGTH, "Guess must be 5 letters"
 
         word = word.upper()
         guess = Guess(word, check_guess(self.answer, word))
@@ -153,7 +160,7 @@ class Game:
     def reset(self):
         """
         Reset the game by picking a new word, clearing the guesses
-        and setting hte state back to playing
+        and setting the state back to playing
         :return:
         """
         assert self.game_over(), "Cannot reset, game in play"
@@ -162,7 +169,13 @@ class Game:
         self.gstate = Gamestate.PLAYING
 
 game = Game()
+
+# Test cases to import here
+
 game.gstate = Gamestate.WON
+
+# Reset game to reset word from default
+
 game.reset()
 while (game.gstate == Gamestate.PLAYING):
     game.print_state()
