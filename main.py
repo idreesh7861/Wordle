@@ -34,7 +34,9 @@ class Gamestate(Enum):
 # Hint is defined as a single alphabetic uppercase character
 class Hint:
     def __init__(self, hint):
+
         # Ensures a string
+
         if not isinstance(hint, str):
             raise TypeError("Hint must be a string")
 
@@ -119,10 +121,8 @@ def check_letter(letter: str, index: int, word: Word) -> Clue:
 
 def check_guess(word: Word, guess: Word) -> List[Clue]:
     """
-    Given the answer and a guess
-    compute the list of clues correspsonding to each letter
+    Given the answer and a guess compute the list of clues corresponding to each letter
     """
-
     assert isinstance(word, Word) and \
            isinstance(guess, Word) and \
            len(guess) == WORD_LENGTH and \
