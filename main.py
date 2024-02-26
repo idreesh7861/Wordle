@@ -31,6 +31,29 @@ class Gamestate(Enum):
     PLAYING = 'PLAYING'
 
 
+# Hint is defined as a single alphabetic uppercase character
+class Hint:
+    def __init__(self, hint):
+        # Ensures a string
+        if not isinstance(hint, str):
+            raise TypeError("Hint must be a string")
+
+        # Ensures a single character
+
+        if len(hint) != 1:
+            raise ValueError("Hint must be a single character")
+
+        # Ensures is alphabetic and upper
+
+        if not hint.isalpha() or not hint.isupper():
+            raise ValueError("Hint must be a single uppercase letter A-Z")
+
+        # Sets hint to hint
+        self.hint = hint
+
+    def __str__(self): return self.hint
+
+
 @dataclass
 class Guess:
     word: Word
@@ -129,7 +152,8 @@ class Game:
         """
         assert self.gstate == Gamestate.PLAYING and \
                isinstance(word, Word) and \
-               len(word) == WORD_LENGTH, "make-guess assertion failed"
+               len(word) == WORD_LENGTH and \
+               word.upper() in WORDS, "make-guess assertion failed"
 
         word = word.upper()
         guess = Guess(word, check_guess(self.answer, word))
@@ -156,7 +180,6 @@ class Game:
     def game_over(self) -> bool:
         """
         Yields true if the game is over, otherwise false
-        :return:
         """
         return self.gstate == Gamestate.WON or self.gstate == Gamestate.LOST
 
@@ -164,17 +187,46 @@ class Game:
         """
         Reset the game by picking a new word, clearing the guesses
         and setting the state back to playing
-        :return:
         """
         assert self.game_over(), "Cannot reset, game in play"
         self.answer = random.choice(WORDS)
         self.guesses = []
         self.gstate = Gamestate.PLAYING
 
+    def print_hint(self):
+        lst = []
+        for letter in self.answer:
+            lst.append(letter)
+
+        hint = Hint(random.choice(lst))
+        print("HINT: The letter {0} is at position {1} in the word.".format(hint, lst.index(str(hint)) + 1))
+
+
+def test():
+
+    # Test cases to be included here
+
+    print(check_letter("S", 0, "STOUT"))  # Expected Output: CLUE.GREEN
+    print(check_letter("S", 3, "STOUT"))  # Expected Output: CLUE.YELLOW
+    print(check_letter("Z", 0, "STOUT"))  # Expected Output: CLUE.GREY
+
+    print(check_guess("STAND", "STOUT"))
+    # Expected Output: [<Clue.GREEN: 1>, <Clue.GREEN: 1>, <Clue.GREY: 3>, <Clue.GREY: 3>, <Clue.YELLOW: 2>]
+
+    try:
+        hint1 = Hint('A')
+        print(hint1)  # Output: A
+
+        hint2 = Hint('AB')  # ValueError: Hint must be a single character
+    except ValueError as e:
+        print(e)
+
+    pass
+
 
 game = Game()
 
-# Test cases to import here
+# test()
 
 game.gstate = Gamestate.WON
 
@@ -183,7 +235,14 @@ game.gstate = Gamestate.WON
 game.reset()
 while game.gstate == Gamestate.PLAYING:
     game.print_state()
-    Input = input()
+    Input = "TEST"
+
+    while Input.upper() not in WORDS:
+        Input = input("Please enter a valid word\n")
+        if Input.upper() == "HINT":
+            game.print_state()
+            game.print_hint()
+
     game.make_guess(Input)
 
 game.print_state()
