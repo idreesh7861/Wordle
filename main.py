@@ -3,12 +3,17 @@ from enum import Enum  # for defining enumerations
 import typing  # for type hinting
 import random  # for selecting a random answer
 from typing import List  # for defining custom typed lists
+from urllib.error import URLError
 from urllib.request import urlopen  # to load web data
 
 # grab a list of words
 
 url = 'https://raw.githubusercontent.com/tabatkins/wordle-list/main/words'
-WORDS = [word.rstrip().decode('UTF-8').upper() for word in urlopen(url).readlines()]
+try:
+    WORDS = [word.rstrip().decode('UTF-8').upper() for word in urlopen(url).readlines()]
+except URLError as e:
+    print("Internet Connection Error")
+
 
 # constants
 
@@ -50,10 +55,11 @@ class Hint:
         if not hint.isalpha() or not hint.isupper():
             raise ValueError("Hint must be a single uppercase letter A-Z")
 
-        # Sets hint to hint
+        # Sets hint to inputted value
         self.hint = hint
 
-    def __str__(self): return self.hint
+    def __str__(self):
+        return self.hint
 
 
 @dataclass
@@ -94,7 +100,7 @@ class Guess:
     """
 
     def __repr__(self):
-        cluestr = [str(self.word[i]) + ":" + \
+        cluestr = [str(self.word[i]) + ":" +
                    self.clues[i].name for i in range(WORD_LENGTH)]
         return f"{self.word}: {cluestr}"
 
@@ -170,6 +176,7 @@ class Game:
         Print the current state of the game
         """
         for guess in self.guesses: print(guess)
+
         if self.gstate == Gamestate.WON:
             print(f"You Won! You took {len(self.guesses)} guesses.")
         elif self.gstate == Gamestate.LOST:
@@ -199,11 +206,24 @@ class Game:
             lst.append(letter)
 
         hint = Hint(random.choice(lst))
-        print("HINT: The letter {0} is at position {1} in the word.".format(hint, lst.index(str(hint)) + 1))
+        print("HINT: The letter {0} is the {1} letter in the word.".format(
+            hint, numbers_to_ordinal(lst.index(str(hint)))))
+
+
+def numbers_to_ordinal(number: int) -> str:
+    if number == 0:
+        return "1st"
+    elif number == 1:
+        return "2nd"
+    elif number == 2:
+        return "3rd"
+    elif number == 3:
+        return "4th"
+    elif number == 4:
+        return "5th"
 
 
 def test():
-
     # Test cases to be included here
 
     print(check_letter("S", 0, "STOUT"))  # Expected Output: CLUE.GREEN
@@ -218,6 +238,7 @@ def test():
         print(hint1)  # Output: A
 
         hint2 = Hint('AB')  # ValueError: Hint must be a single character
+        print(hint2)
     except ValueError as e:
         print(e)
 
@@ -238,10 +259,10 @@ while game.gstate == Gamestate.PLAYING:
     Input = "TEST"
 
     while Input.upper() not in WORDS:
-        Input = input("Please enter a valid word\n")
         if Input.upper() == "HINT":
             game.print_state()
             game.print_hint()
+        Input = input("Please enter a valid word\n")
 
     game.make_guess(Input)
 
