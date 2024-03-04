@@ -213,12 +213,20 @@ class Game:
 
 
 def numbers_to_ordinal(number: int) -> str:
+    assert isinstance(number, int) and 0 <= number <= 4
     match number:
-        case 0: return "1st"
-        case 1: return "2nd"
-        case 2: return "3rd"
-        case 3: return "4th"
-        case 4: return "5th"
+        case 0:
+            return "1st"
+        case 1:
+            return "2nd"
+        case 2:
+            return "3rd"
+        case 3:
+            return "4th"
+        case 4:
+            return "5th"
+        case _:
+            return "Error Occured"
 
 
 def playgame():
@@ -246,7 +254,6 @@ def playgame():
 
 
 def test():
-
     print(check_letter("S", 0, "STOUT"))  # Expected Output: CLUE.GREEN
     print(check_letter("S", 3, "STOUT"))  # Expected Output: CLUE.YELLOW
     print(check_letter("Z", 0, "STOUT"))  # Expected Output: CLUE.GREY
@@ -266,7 +273,7 @@ def test():
     try:
         hint3 = Hint('a')
     except ValueError as error:
-        print(error) # Expected Output: Hint must be a single uppercase letter A-Z
+        print(error)  # Expected Output: Hint must be a single uppercase letter A-Z
     pass
 
 
