@@ -3,7 +3,7 @@ from enum import Enum  # for defining enumerations
 import typing  # for type hinting
 import random  # for selecting a random answer
 from typing import List  # for defining custom typed lists
-from urllib.error import URLError
+from urllib.error import URLError  # For catching URLError
 from urllib.request import urlopen  # to load web data
 
 # grab a list of words
@@ -12,8 +12,9 @@ url = 'https://raw.githubusercontent.com/tabatkins/wordle-list/main/words'
 try:
     WORDS = [word.rstrip().decode('UTF-8').upper() for word in urlopen(url).readlines()]
 except URLError as e:
-    print("Internet Connection Error")
-
+    print("Internet Connection Error: {0}".format(e))
+    print("Exiting...")
+    quit()
 
 # constants
 
@@ -223,7 +224,33 @@ def numbers_to_ordinal(number: int) -> str:
         return "5th"
 
 
+def playgame():
+    game = Game()
+
+    game.gstate = Gamestate.WON
+
+    # Reset game to reset word from default
+
+    game.reset()
+    while game.gstate == Gamestate.PLAYING:
+        game.print_state()
+        Input = "TEST"
+
+        while Input.upper() not in WORDS:
+            if Input.upper() == "HINT":
+                game.print_state()
+                game.print_hint()
+            Input = input("Please enter a valid word\n")
+
+        game.make_guess(Input)
+
+    game.print_state()
+    pass
+
+
 def test():
+    game = Game()
+
     # Test cases to be included here
 
     print(check_letter("S", 0, "STOUT"))  # Expected Output: CLUE.GREEN
@@ -239,31 +266,38 @@ def test():
 
         hint2 = Hint('AB')  # ValueError: Hint must be a single character
         print(hint2)
-    except ValueError as e:
-        print(e)
+    except ValueError as error:
+        print(error)
 
     pass
 
 
-game = Game()
+def menu():
+    while True:
+        print("""
+        1) Play Game
+        2) Hard Mode
+        3) Tests
+        4) Quit
+        """)
+        try:
+            intinput = int(input("Enter your choice: "))
 
-# test()
+            match intinput:
+                case 1:
+                    playgame()
+                case 2:
+                    break
+                case 3:
+                    test()
+                case 4:
+                    quit()
+                case _:
+                    print("Invalid Entry")
 
-game.gstate = Gamestate.WON
+        except ValueError as e:
+            print("Invalid Entry")
 
-# Reset game to reset word from default
 
-game.reset()
-while game.gstate == Gamestate.PLAYING:
-    game.print_state()
-    Input = "TEST"
 
-    while Input.upper() not in WORDS:
-        if Input.upper() == "HINT":
-            game.print_state()
-            game.print_hint()
-        Input = input("Please enter a valid word\n")
-
-    game.make_guess(Input)
-
-game.print_state()
+menu()
