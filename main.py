@@ -246,9 +246,6 @@ def playgame():
 
 
 def test():
-    game = Game()
-
-    # Test cases to be included here
 
     print(check_letter("S", 0, "STOUT"))  # Expected Output: CLUE.GREEN
     print(check_letter("S", 3, "STOUT"))  # Expected Output: CLUE.YELLOW
@@ -259,13 +256,17 @@ def test():
 
     try:
         hint1 = Hint('A')
-        print(hint1)  # Output: A
+        print(hint1)  # Expected Output: A
 
-        hint2 = Hint('AB')  # ValueError: Hint must be a single character
+        hint2 = Hint('AB')  # Expected Output: Hint must be a single character
         print(hint2)
     except ValueError as error:
         print(error)
 
+    try:
+        hint3 = Hint('a')
+    except ValueError as error:
+        print(error) # Expected Output: Hint must be a single uppercase letter A-Z
     pass
 
 
