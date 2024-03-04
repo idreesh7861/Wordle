@@ -212,16 +212,12 @@ class Game:
 
 
 def numbers_to_ordinal(number: int) -> str:
-    if number == 0:
-        return "1st"
-    elif number == 1:
-        return "2nd"
-    elif number == 2:
-        return "3rd"
-    elif number == 3:
-        return "4th"
-    elif number == 4:
-        return "5th"
+    match number:
+        case 0: return "1st"
+        case 1: return "2nd"
+        case 2: return "3rd"
+        case 3: return "4th"
+        case 4: return "5th"
 
 
 def playgame():
@@ -308,7 +304,6 @@ def menu():
         except ValueError as e:
             # If input by user is not a number
             print("Invalid Entry")
-
 
 
 menu()
