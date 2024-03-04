@@ -273,7 +273,11 @@ def test():
 
 
 def menu():
+    """
+    Function to print and navigate menu
+    """
     while True:
+        # Print Menu Options
         print("""
         1) Play Game
         2) Hard Mode
@@ -281,21 +285,28 @@ def menu():
         4) Quit
         """)
         try:
+            # Accept user input to navigate menu
             intinput = int(input("Enter your choice: "))
 
             match intinput:
                 case 1:
+                    # Regular Game Mode
                     playgame()
                 case 2:
+                    # Hard Mode
                     break
                 case 3:
+                    # Test Scenarios
                     test()
                 case 4:
+                    # Quit
                     quit()
                 case _:
+                    # If other numbers are entered
                     print("Invalid Entry")
 
         except ValueError as e:
+            # If input by user is not a number
             print("Invalid Entry")
 
 
