@@ -176,7 +176,8 @@ class Game:
         """
         Print the current state of the game
         """
-        for guess in self.guesses: print(guess)
+        for guess in self.guesses:
+            print(guess)
 
         if self.gstate == Gamestate.WON:
             print(f"You Won! You took {len(self.guesses)} guesses.")
@@ -301,7 +302,7 @@ def menu():
                     # If other numbers are entered
                     print("Invalid Entry")
 
-        except ValueError as e:
+        except ValueError:
             # If input by user is not a number
             print("Invalid Entry")
 
