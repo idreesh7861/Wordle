@@ -11,6 +11,7 @@ from urllib.request import urlopen  # to load web data
 url = 'https://raw.githubusercontent.com/tabatkins/wordle-list/main/words'
 try:
     WORDS = [word.rstrip().decode('UTF-8').upper() for word in urlopen(url).readlines()]
+    setWords = set(WORDS)
 except URLError as e:
     print("Internet Connection Error: {0}".format(e))
     print("Exiting...")
@@ -226,7 +227,7 @@ def numbers_to_ordinal(number: int) -> str:
         case 4:
             return "5th"
         case _:
-            return "Error Occured"
+            return "Error Occurred"
 
 
 def playgame():
@@ -241,11 +242,48 @@ def playgame():
         game.print_state()
         Input = "TEST"
 
-        while Input.upper() not in WORDS:
+        while Input.upper() not in setWords:
             if Input.upper() == "HINT":
                 game.print_state()
                 game.print_hint()
             Input = input("Please enter a valid word\n")
+
+        game.make_guess(Input)
+
+    game.print_state()
+    pass
+
+
+def playHardMode():
+    game = Game()
+    game.gstate = Gamestate.WON
+
+    # Reset game to reset word from default
+
+    game.reset()
+
+    while game.gstate == Gamestate.PLAYING:
+        game.print_state()
+        Input = "TEST"
+        while Input.upper() not in setWords:
+            # HARD MODE CODE
+            #
+            Input = input("Please enter a valid word\n")
+            Input = Input.upper()
+
+            if Input == "HINT":
+                game.print_state()
+                game.print_hint()
+
+            if len(game.guesses) != 0:
+                index = -1
+                for clue in game.guesses[len(game.guesses) - 1].clues:
+                    index += 1
+                    if clue == Clue.GREEN and Input[index] != game.guesses[len(game.guesses) - 1].word[index]:
+                        Input = "TEST"
+
+                    if clue == Clue.YELLOW and game.guesses[len(game.guesses) - 1].word[index] not in Input:
+                        Input = "TEST"
 
         game.make_guess(Input)
 
@@ -272,8 +310,11 @@ def test():
 
     try:
         hint3 = Hint('a')
+        print(hint3)
     except ValueError as error:
         print(error)  # Expected Output: Hint must be a single uppercase letter A-Z
+
+    input("\nEnter any key to continue...")
     pass
 
 
@@ -291,15 +332,15 @@ def menu():
         """)
         try:
             # Accept user input to navigate menu
-            intinput = int(input("Enter your choice: "))
+            int_input = int(input("Enter your choice: "))
 
-            match intinput:
+            match int_input:
                 case 1:
                     # Regular Game Mode
                     playgame()
                 case 2:
                     # Hard Mode
-                    break
+                    playHardMode()
                 case 3:
                     # Test Scenarios
                     test()
@@ -309,7 +350,6 @@ def menu():
                 case _:
                     # If other numbers are entered
                     print("Invalid Entry")
-
         except ValueError:
             # If input by user is not a number
             print("Invalid Entry")
