@@ -5,7 +5,8 @@ import random  # for selecting a random answer
 from typing import List  # for defining custom typed lists
 from urllib.error import URLError  # For catching URLError
 from urllib.request import urlopen  # to load web data
-from colorama import Fore # For coloring text for hints
+from colorama import Fore  # For coloring text for hints
+import time # For adding delays in code
 
 # grab a list of words
 
@@ -397,9 +398,16 @@ def menu():
                 case _:
                     # If other numbers are entered
                     print("Invalid Entry")
+                    time.sleep(1)
         except ValueError:
             # If input by user is not a number
             print("Invalid Entry")
+            time.sleep(1)
 
 
-menu()
+def main():
+    menu()
+
+
+if __name__ == "__main__":
+    main()
