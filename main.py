@@ -121,6 +121,7 @@ class Guess:
 def check_letter(letter: str, index: int, word: Word) -> Clue:
     """
     Given a letter and an index, computes the colour of the clue based on the word
+    ORIGINAL IMPLEMENTATION
     """
 
     assert isinstance(index, int) and \
