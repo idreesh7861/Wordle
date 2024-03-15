@@ -5,6 +5,7 @@ import random  # for selecting a random answer
 from typing import List  # for defining custom typed lists
 from urllib.error import URLError  # For catching URLError
 from urllib.request import urlopen  # to load web data
+from colorama import Fore # For coloring text for hints
 
 # grab a list of words
 
@@ -102,9 +103,19 @@ class Guess:
     """
 
     def __repr__(self):
-        cluestr = [str(self.word[i]) + ":" +
-                   self.clues[i].name for i in range(WORD_LENGTH)]
-        return f"{self.word}: {cluestr}"
+        # cluestr = [str(self.word[i]) + ":" +
+        #            self.clues[i].name for i in range(WORD_LENGTH)]
+        # return f"{self.word}: {cluestr}"
+        colordict = {
+            Clue.GREY: Fore.WHITE,
+            Clue.YELLOW: Fore.YELLOW,
+            Clue.GREEN: Fore.GREEN
+        }
+        cluestr = ""
+        for i in range(WORD_LENGTH):
+            cluestr += colordict[self.clues[i]] + self.word[i]
+        cluestr += Fore.RESET
+        return cluestr
 
 
 def check_letter(letter: str, index: int, word: Word) -> Clue:
@@ -127,18 +138,53 @@ def check_letter(letter: str, index: int, word: Word) -> Clue:
     return Clue.GREY
 
 
+def check_green(letter: str, index: int, word: Word, char_count: dict) -> [Clue, dict]:
+    if word[index: index + 1] == letter:
+        char_count[letter] -= 1
+        return Clue.GREEN, char_count
+
+    return Clue.GREY, char_count
+
+
+def check_yellow(letter: str, index: int, word: Word, char_count: dict) -> [Clue, dict]:
+    if letter in word and char_count[letter] != 0:
+        char_count[letter] -= 1
+        return Clue.YELLOW, char_count
+
+    return None, char_count
+
+
 def check_guess(word: Word, guess: Word) -> List[Clue]:
     """
     Given the answer and a guess compute the list of clues corresponding to each letter
     """
+
     assert isinstance(word, Word) and \
            isinstance(guess, Word) and \
            len(guess) == WORD_LENGTH and \
            len(word) == WORD_LENGTH, "pre-check_guess failed"
 
-    clues = []
+    # Create a dictionary with a char count
+    char_count = {}
+    for char in word:
+        if char in char_count.keys():
+            char_count[char] += 1
+        else:
+            char_count[char] = 1
+
+    clues = [Clue.GREY for i in range(WORD_LENGTH)]
+
+    # Check Green
+
     for index, letter in enumerate(guess):
-        clues.append(check_letter(guess[index: index + 1], index, word))
+        clues[index], char_count = check_green(letter, index, word, char_count)
+
+    # Check Yellow
+
+    for index, letter in enumerate(guess):
+        temp, char_count = check_yellow(letter, index, word, char_count)
+        if temp is not None:
+            clues[index] = temp
 
     return clues
 
@@ -297,7 +343,7 @@ def test():
     print(check_letter("Z", 0, "STOUT"))  # Expected Output: CLUE.GREY
 
     print(check_guess("STAND", "STOUT"))
-    # Expected Output: [<Clue.GREEN: 1>, <Clue.GREEN: 1>, <Clue.GREY: 3>, <Clue.GREY: 3>, <Clue.YELLOW: 2>]
+    # Expected Output: [<Clue.GREEN>, <Clue.GREEN>, <Clue.GREY>, <Clue.GREY>, <Clue.GREY>]
 
     try:
         hint1 = Hint('A')
@@ -314,7 +360,7 @@ def test():
     except ValueError as error:
         print(error)  # Expected Output: Hint must be a single uppercase letter A-Z
 
-    input("\nEnter any key to continue...")
+    input("\nPress the enter key to continue...")
     pass
 
 
