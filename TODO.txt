@@ -1,0 +1,5 @@
+MAKE CODE BLOCKS DETAILING EVERY CHANGE MADE - REFER TO GIT TREE FOR THIS ITS LITERALLY LABELLED YOU DONUT
+
+HINT:
+Consider any pre-conditions required as well as defining the operation body.
+Document any assumptions you make in interpreting this requirement in your report.

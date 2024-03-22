@@ -6,7 +6,7 @@ from typing import List  # for defining custom typed lists
 from urllib.error import URLError  # For catching URLError
 from urllib.request import urlopen  # to load web data
 from colorama import Fore  # For coloring text for hints
-import time # For adding delays in code
+import time  # For adding delays in code
 
 # grab a list of words
 
@@ -40,24 +40,14 @@ class Gamestate(Enum):
     PLAYING = 'PLAYING'
 
 
-# Hint is defined as a single alphabetic uppercase character
+@dataclass
 class Hint:
+    # Hint is defined as a single alphabetic uppercase character
     def __init__(self, hint):
-
-        # Ensures a string
-
-        if not isinstance(hint, str):
-            raise TypeError("Hint must be a string")
-
-        # Ensures a single character
-
-        if len(hint) != 1:
-            raise ValueError("Hint must be a single character")
-
-        # Ensures is alphabetic and upper
-
-        if not hint.isalpha() or not hint.isupper():
-            raise ValueError("Hint must be a single uppercase letter A-Z")
+        assert isinstance(hint, str) and \
+            len(hint) == 1 and \
+            hint.isalpha() and \
+            hint.isupper(), "pre-hint assertion failed"
 
         # Sets hint to inputted value
         self.hint = hint
@@ -148,7 +138,7 @@ def check_green(letter: str, index: int, word: Word, char_count: dict) -> [Clue,
     return Clue.GREY, char_count
 
 
-def check_yellow(letter: str, index: int, word: Word, char_count: dict) -> [Clue, dict]:
+def check_yellow(letter: str, word: Word, char_count: dict) -> [Clue, dict]:
     if letter in word and char_count[letter] != 0:
         char_count[letter] -= 1
         return Clue.YELLOW, char_count
@@ -184,7 +174,7 @@ def check_guess(word: Word, guess: Word) -> List[Clue]:
     # Check Yellow
 
     for index, letter in enumerate(guess):
-        temp, char_count = check_yellow(letter, index, word, char_count)
+        temp, char_count = check_yellow(letter, word, char_count)
         if temp is not None:
             clues[index] = temp
 
@@ -316,22 +306,25 @@ def playHardMode():
         while Input.upper() not in setWords:
             # HARD MODE CODE
             #
-            Input = input("Please enter a valid word\n")
+            Input = input("HARDMODE: Please enter a valid word using all clues provided\n")
             Input = Input.upper()
 
             if Input == "HINT":
                 game.print_state()
                 game.print_hint()
 
-            if len(game.guesses) != 0:
-                index = -1
-                for clue in game.guesses[len(game.guesses) - 1].clues:
-                    index += 1
-                    if clue == Clue.GREEN and Input[index] != game.guesses[len(game.guesses) - 1].word[index]:
-                        Input = "TEST"
+            if Input in setWords:
+                if len(game.guesses) != 0:
+                    index = -1
+                    for clue in game.guesses[len(game.guesses) - 1].clues:
+                        index += 1
+                        if clue == Clue.GREEN and Input[index] != game.guesses[len(game.guesses) - 1].word[index]:
+                            Input = "TEST"
+                            break
 
-                    if clue == Clue.YELLOW and game.guesses[len(game.guesses) - 1].word[index] not in Input:
-                        Input = "TEST"
+                        if clue == Clue.YELLOW and game.guesses[len(game.guesses) - 1].word[index] not in Input:
+                            Input = "TEST"
+                            break
 
         game.make_guess(Input)
 
